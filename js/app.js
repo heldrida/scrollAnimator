@@ -7,7 +7,12 @@ ScrollAnimator.prototype = {
 
 		window.scroll(0, 0);
 
+		this.scrollWrapper = params.scrollWrapper;
+		this.scrollLock = false;
 		this.calculated_scroll_y = 0;
+		this.yPosition = 0;
+		this.ease = 0.1;
+		this.eased_scroll_y = 0;
 		this.mouseDelta = 0;
 		this.breakpoint = {};
 		this.callback = params.callback;
@@ -19,6 +24,9 @@ ScrollAnimator.prototype = {
 
 		// event listeners
 		this.listener();
+
+		// start loop
+		this.loop();
 
 	},
 
@@ -91,8 +99,6 @@ ScrollAnimator.prototype = {
 		// deal with different browsers calculating the delta differently
 		this.mouseDelta = d;
 
-		this.breakpointCallbackFinder();
-
 	},
 
 	breakpointCallbackFinder: function () {
@@ -115,6 +121,24 @@ ScrollAnimator.prototype = {
 
 	},
 
+	loop: function () {
+
+		this.eased_scroll_y += ( (this.calculated_scroll_y) - this.eased_scroll_y) * this.ease;
+
+		//this.smoothScroll();
+
+		this.breakpointCallbackFinder();
+
+	    requestAnimationFrame(this.loop.bind(this));
+
+	},
+
+	smoothScroll: function () {
+
+		this.scrollWrapper.style[this.transformProperty] = "translate3d(0px, " + this.eased_scroll_y + "px, 0px)";
+
+	},
+
 	getPercentage: function (a, b) {
 
 		return (a / b) * 100;
@@ -126,20 +150,27 @@ ScrollAnimator.prototype = {
 document.addEventListener('DOMContentLoaded', function(){ 
 
 	var scrollAnimator = new ScrollAnimator({
+		scrollWrapper: document.querySelector('.scrollWrap'),
 		callback: {
 			'panel-1': function (context) {
 				
 				// cached element select
 				var el = context.breakpoint['panel-1'].el,
 					column = el.querySelector('.cat-column'),
-					percentage = Math.abs(context.getPercentage(context.calculated_scroll_y, el.offsetHeight));
+					percentage = Math.abs(context.getPercentage(context.eased_scroll_y, el.offsetHeight));
 
 				// set fixed
 				el.style.position = 'fixed';
 
 				if (percentage <= 100) {
 
+					context.scrollLock = true;
 					column.style[context.transformProperty] = "translate3d(" + (-1 * percentage) + "%, 0, 0)";
+
+				} else {
+
+					context.scrollLock = false;
+					column.style[context.transformProperty] = "translate3d(-100%, 0, 0)";				
 
 				}
 
