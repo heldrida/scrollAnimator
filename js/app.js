@@ -77,6 +77,12 @@ ScrollAnimator.prototype = {
 
 		}.bind(this)());
 
+		// position absolutely
+		for(var name in this.breakpoint) {
+			this.breakpoint[name].el.style.position = 'absolute';
+			this.breakpoint[name].el.style.top = this.breakpoint[name].pos.top + 'px';
+		}
+
 	},
 
 	listener: function () {
@@ -88,16 +94,7 @@ ScrollAnimator.prototype = {
 
 	onMouseWheel: function (e) {
 
-		var d = e.wheelDelta;
-
-		this.calculated_scroll_y += d;
-
-		if (this.calculated_scroll_y > 0) {
-			this.calculated_scroll_y = 0;
-		}
-
-		// deal with different browsers calculating the delta differently
-		this.mouseDelta = d;
+		this.calculated_scroll_y = window.scrollY;
 
 	},
 
@@ -152,22 +149,27 @@ document.addEventListener('DOMContentLoaded', function(){
 	var scrollAnimator = new ScrollAnimator({
 		scrollWrapper: document.querySelector('.scrollWrap'),
 		callback: {
-			'panel-1': function (context) {
-				
+			'panel-1': function (context) { 
+
 				// cached element select
 				var el = context.breakpoint['panel-1'].el,
 					column = el.querySelector('.cat-column'),
 					percentage = Math.abs(context.getPercentage(context.eased_scroll_y, el.offsetHeight));
 
-				// set fixed
-				el.style.position = 'fixed';
-
 				if (percentage <= 100) {
+					
+					// set fixed
+					el.style.position = 'fixed';
+					el.style.zIndex = 2;
 
 					context.scrollLock = true;
 					column.style[context.transformProperty] = "translate3d(" + (-1 * percentage) + "%, 0, 0)";
+					el = context.breakpoint['panel-1'].el.style[context.transformProperty] = "translate3d(0px, 0px, 0px)";
 
 				} else {
+
+					//el.style.position = '';
+					el.style.zIndex = '';
 
 					context.scrollLock = false;
 					column.style[context.transformProperty] = "translate3d(-100%, 0, 0)";				
@@ -177,9 +179,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			},
 
 			'panel-2': function (context) {
-
-				context.breakpoint['panel-1'].el.style.position = '';
-
+				console.log('zone2')
 			}
 		}
 	});
