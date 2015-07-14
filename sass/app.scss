@@ -1,0 +1,43 @@
+.container {
+    width: 100%;
+    height: auto;
+    overflow: auto;
+
+  section {
+    width: 100vw;
+    height: 100vh; 
+    
+    &.yellow {
+      background: #ccf;
+    }
+    
+    &.red {
+      background: #ecf;
+    }
+    
+    &.green {
+      background: #ced;
+    }
+
+    &.blue {
+      background: #dcf;
+    }
+
+  }
+
+  [data-breakpoint="panel-1"] {
+    position: relative;
+    width: 100%;
+
+    .col {
+      width: 50%;
+      height: 100%;
+      text-align: center;
+      overflow: hidden;
+      background-image: url(http://www.peta.org/wp-content/uploads/2014/12/kitten1.jpg);
+      background-position: center center;
+      background-size: cover;
+    }
+  }
+
+}
