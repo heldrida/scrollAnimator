@@ -108,13 +108,9 @@ ScrollAnimator.prototype = {
 
 			var bp = this.breakpoint[k];
 
-			if (Math.abs(this.calculated_scroll_y) >= bp.pos.top) {
+			if (typeof bp.callback === "function") {
 
-				if (typeof bp.callback === "function") {
-
-					bp.callback(this);
-
-				}
+				bp.callback(this);
 
 			}
 
@@ -167,28 +163,17 @@ document.addEventListener('DOMContentLoaded', function(){
 		callback: {
 			'panel-1': function (context) { 
 
-				// cached element select
-				var el = context.breakpoint['panel-1'].el,
-					column = el.querySelector('.cat-column'),
-					startPos = context.eased_scroll_y - context.breakpoint['panel-1'].pos.top,
-					endPos = context.breakpoint['panel-1'].pos.bottom,
-					percentage = Math.abs(context.getPercentage(startPos, endPos));
+				if (window.scrollY >= document.querySelector('[data-breakpoint="panel-1"]').offsetTop) {
 
-				if (percentage <= 100) {
-					
-					// set fixed
-					el.style.position = 'fixed';
-					el.style.zIndex = 2;
+					// cached element select
+					var el = context.breakpoint['panel-1'].el,
+						column = el.querySelector('.cat-column'),
+						startPos = context.eased_scroll_y - document.querySelector('[data-breakpoint="panel-1"]').offsetTop,
+						endPos = document.querySelector('[data-breakpoint="panel-1"]').offsetHeight,
+						percentage = Math.abs(context.getPercentage(startPos, endPos));
 
-					context.pinSpacer.style.height = "100vh";
-
-					column.style[context.transformProperty] = "translate3d(" + (-1 * percentage) + "%, 0, 0)";
-
-				} else {
-
-					el.style.position = '';
-					el.style.zIndex = '';
-					column.style[context.transformProperty] = "translate3d(-100%, 0, 0)";
+						console.log(percentage);
+ 
 
 				}
 
@@ -196,6 +181,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
 			'panel-2': function (context) {
 				 
+				if (window.scrollY >= document.querySelector('[data-breakpoint="panel-2"]').offsetTop) {
+					console.log('panel-2');
+				}
+
 			}
 		}
 	});
