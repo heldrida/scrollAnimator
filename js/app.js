@@ -154,7 +154,9 @@ document.addEventListener('DOMContentLoaded', function(){
 				// cached element select
 				var el = context.breakpoint['panel-1'].el,
 					column = el.querySelector('.cat-column'),
-					percentage = Math.abs(context.getPercentage(context.eased_scroll_y, el.offsetHeight));
+					startPos = context.eased_scroll_y - context.breakpoint['panel-1'].pos.top,
+					endPos = context.breakpoint['panel-1'].pos.bottom,
+					percentage = Math.abs(context.getPercentage(startPos, endPos));
 
 				if (percentage <= 100) {
 					
@@ -162,24 +164,27 @@ document.addEventListener('DOMContentLoaded', function(){
 					el.style.position = 'fixed';
 					el.style.zIndex = 2;
 
-					context.scrollLock = true;
 					column.style[context.transformProperty] = "translate3d(" + (-1 * percentage) + "%, 0, 0)";
 					el = context.breakpoint['panel-1'].el.style[context.transformProperty] = "translate3d(0px, 0px, 0px)";
 
 				} else {
 
-					//el.style.position = '';
-					el.style.zIndex = '';
-
-					context.scrollLock = false;
-					column.style[context.transformProperty] = "translate3d(-100%, 0, 0)";				
+					el.style.position = '';
+					column.style[context.transformProperty] = "translate3d(-100%, 0, 0)";
 
 				}
 
 			},
 
 			'panel-2': function (context) {
-				console.log('zone2')
+				// cached element select
+				var el = context.breakpoint['panel-2'].el,
+					startPos = context.eased_scroll_y - context.breakpoint['panel-2'].pos.top,
+					endPos = context.breakpoint['panel-2'].pos.bottom,
+					percentage = Math.abs(context.getPercentage(startPos, endPos));
+
+				console.log('percentage', percentage);					
+
 			}
 		}
 	});
