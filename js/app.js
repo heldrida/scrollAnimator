@@ -18,12 +18,15 @@ ScrollAnimator.prototype = {
 		this.callback = params.callback;
 		this.transforms;
 		this.transformProperty;
-
+		this.pinSpacer;
+		
 		// setter
 		this.setter();
 
 		// event listeners
 		this.listener();
+
+		this.generatePinSpacer();
 
 		// start loop
 		this.loop();
@@ -79,8 +82,9 @@ ScrollAnimator.prototype = {
 
 		// position absolutely
 		for(var name in this.breakpoint) {
-			this.breakpoint[name].el.style.position = 'absolute';
+			//this.breakpoint[name].el.style.position = 'absolute';
 			this.breakpoint[name].el.style.top = this.breakpoint[name].pos.top + 'px';
+			this.breakpoint[name].el.style.left = '0px';
 		}
 
 	},
@@ -140,6 +144,18 @@ ScrollAnimator.prototype = {
 
 		return (a / b) * 100;
 
+	},
+
+	generatePinSpacer: function () {
+
+		var newDiv = document.createElement("div");
+			newDiv.setAttribute("id", "pinSpacer");
+			newDiv.style.height = "0px";
+
+		this.scrollWrapper.insertBefore(newDiv, this.breakpoint['panel-1'].el);
+
+		this.pinSpacer = newDiv;
+
 	}
 
 };
@@ -164,12 +180,14 @@ document.addEventListener('DOMContentLoaded', function(){
 					el.style.position = 'fixed';
 					el.style.zIndex = 2;
 
+					context.pinSpacer.style.height = "100vh";
+
 					column.style[context.transformProperty] = "translate3d(" + (-1 * percentage) + "%, 0, 0)";
-					el = context.breakpoint['panel-1'].el.style[context.transformProperty] = "translate3d(0px, 0px, 0px)";
 
 				} else {
 
 					el.style.position = '';
+					el.style.zIndex = '';
 					column.style[context.transformProperty] = "translate3d(-100%, 0, 0)";
 
 				}
@@ -177,14 +195,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			},
 
 			'panel-2': function (context) {
-				// cached element select
-				var el = context.breakpoint['panel-2'].el,
-					startPos = context.eased_scroll_y - context.breakpoint['panel-2'].pos.top,
-					endPos = context.breakpoint['panel-2'].pos.bottom,
-					percentage = Math.abs(context.getPercentage(startPos, endPos));
-
-				console.log('percentage', percentage);					
-
+				 
 			}
 		}
 	});
